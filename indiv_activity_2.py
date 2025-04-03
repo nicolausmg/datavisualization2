@@ -175,7 +175,7 @@ if 'trained_model' in st.session_state:
     st.subheader("Visualizations")
 
     if model_choice == "Random Forest":
-        st.write("Feature Importances")
+        st.write("#### Feature Importance")
         importance_df = pd.DataFrame({"Feature": selected_features, "Importance": model.feature_importances_})
         importance_df = importance_df.sort_values("Importance", ascending=False)
         fig_imp, ax_imp = plt.subplots()
@@ -187,6 +187,8 @@ if 'trained_model' in st.session_state:
         cm = confusion_matrix(y_test, y_pred)
         fig_cm, ax_cm = plt.subplots()
         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax_cm)
+        ax_cm.set_xlabel("Predicted Labels")
+        ax_cm.set_ylabel("True Labels")
         st.pyplot(fig_cm)
 
         if len(np.unique(y_test)) == 2:
