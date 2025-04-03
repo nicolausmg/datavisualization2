@@ -49,8 +49,11 @@ if uploaded_file is not None:
     target_names = np.unique(y)
 
 else:
-    dataset_name = st.sidebar.selectbox("Or select a built-in dataset", ["-- Select a Dataset --"] + list(dataset_loaders.keys()))
+    def on_dataset_change():
+        for key in ['trained_model', 'model_choice', 'selected_features', 'is_classification', 'y_test', 'y_pred', 'X_test']:
+            st.session_state.pop(key, None)
 
+    dataset_name = st.sidebar.selectbox("Or select a built-in dataset", ["-- Select a Dataset --"] + list(dataset_loaders.keys()), key="dataset_selector", on_change=on_dataset_change)
     if dataset_name == "-- Select a Dataset --":
         st.info("Please upload a CSV or choose a built-in dataset.")
         st.stop()
@@ -59,26 +62,7 @@ else:
     y = data.target
     is_classification = len(np.unique(y)) < 20 and np.issubdtype(y.dtype, np.integer)
     target_names = data.target_names if is_classification else np.unique(y)
-
-current_dataset_id = dataset_name
-
-if 'last_dataset_id' in st.session_state and st.session_state.last_dataset_id != current_dataset_id:
-    if 'trained_model' in st.session_state:
-        del st.session_state.trained_model
-    if 'model_choice' in st.session_state:
-        del st.session_state.model_choice
-    if 'selected_features' in st.session_state:
-        del st.session_state.selected_features
-    if 'is_classification' in st.session_state:
-        del st.session_state.is_classification
-    if 'y_test' in st.session_state:
-        del st.session_state.y_test
-    if 'y_pred' in st.session_state:
-        del st.session_state.y_pred
-    if 'X_test' in st.session_state:
-        del st.session_state.X_test
-
-st.session_state.last_dataset_id = current_dataset_id
+    st.info("As I mentioned to you in class, the built in datasets don't have categorical varaibles (since I could just access the sklearn datasets, and not those of seaborn). However, the app separates categorical from numerical features if you upload a dataset with those characteristics.")
 
 # ----------------------- Data Preview ----------------------- #
 st.write(f"Dataset preview: **{dataset_name}**")
@@ -204,7 +188,6 @@ if 'trained_model' in st.session_state:
         fig_cm, ax_cm = plt.subplots()
         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax_cm)
         st.pyplot(fig_cm)
-
 
         if len(np.unique(y_test)) == 2:
             st.write("#### ROC Curve")
