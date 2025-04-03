@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import (accuracy_score, mean_squared_error, confusion_matrix, roc_curve, auc, precision_score, recall_score)
 from sklearn.datasets import (load_iris, load_digits, load_diabetes,load_wine, load_breast_cancer)
 
-# ----------------------- Constants and Config ----------------------- #
+# ----------------------- Constants and configurations ----------------------- #
 @st.cache_data
 def load_data ():
     dataset_loaders = {
@@ -27,12 +27,12 @@ dataset_loaders = load_data()
 
 model_options = {"classification": ["Random Forest", "Logistic Regression"], "regression": ["Random Forest", "Linear Regression"]}
 
-# ----------------------- Streamlit Setup ----------------------- #
+# ----------------------- Streamlit setup ----------------------- #
 st.title("Individual Assignment: Train your own Machine Learning Model")
 st.sidebar.title("Data Options")
 uploaded_file = st.sidebar.file_uploader("Upload your CSV data", type=["csv"])
 
-# ----------------------- Data Loading ----------------------- #
+# ----------------------- Data loading ----------------------- #
 df = None
 y = None
 target_names = None
@@ -64,13 +64,13 @@ else:
     target_names = data.target_names if is_classification else np.unique(y)
     st.info("As I mentioned to you in class, the built in datasets don't have categorical varaibles (since I could just access the sklearn datasets, and not those of seaborn). However, the app separates categorical from numerical features if you upload a dataset with those characteristics.")
 
-# ----------------------- Data Preview ----------------------- #
+# ----------------------- Data preview ----------------------- #
 st.write(f"Dataset preview: **{dataset_name}**")
 st.dataframe(df, use_container_width=True)
 st.write(f"Shape: `{df.shape}`")
 st.write("Target Classes:", target_names)
 
-# ----------------------- Feature Selection ----------------------- #
+# ----------------------- Feature selection ----------------------- #
 st.write("### Feature Selection")
 qualitative_features = df.select_dtypes(include=["object"]).columns.tolist()
 quantitative_features = df.select_dtypes(include=["number"]).columns.tolist()
@@ -87,7 +87,7 @@ X = df[selected_features]
 target = y
 task_type = "classification" if is_classification else "regression"
 
-# ----------------------- Model Configuration ----------------------- #
+# ----------------------- Model configuration ----------------------- #
 model_choice = st.sidebar.selectbox("Select Model", model_options[task_type])
 
 with st.sidebar.form("model_config_form"):
@@ -108,7 +108,7 @@ with st.sidebar.form("model_config_form"):
 
     submitted = st.form_submit_button("Fit Model")
 
-# ----------------------- Model Training ----------------------- #
+# ----------------------- Model training ----------------------- #
 if submitted:
     X_train, X_test, y_train, y_test = train_test_split(X, target, test_size=test_ratio, random_state=42)
 
@@ -141,7 +141,7 @@ if submitted:
         'X_test': X_test
     })
 
-# ----------------------- Model Results & Evaluation ----------------------- #
+# ----------------------- Model results and evaluation ----------------------- #
 if 'trained_model' in st.session_state:
     model = st.session_state['trained_model']
     y_test = st.session_state['y_test']
@@ -163,7 +163,7 @@ if 'trained_model' in st.session_state:
         mse = mean_squared_error(y_test, y_pred)
         st.success(f"Mean Squared Error: **{mse:.2f}**")
 
-    # ----------------------- Model Download ----------------------- #
+    # ----------------------- Model download ----------------------- #
     st.subheader("Download Trained Model")
     st.info("As mentioned in class, we never saw how to export a model, so I had to search for it in online documentation. I found that the `joblib` library is used to save and load models in Python. It is a part of the `sklearn` library, which is the one we have used at Esade for our machine learning tasks. The `joblib.dump()` function is used to save the model to a file, and `joblib.load()` is used to load the model back into memory.")
     buffer = io.BytesIO()
